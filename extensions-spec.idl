@@ -1,0 +1,482 @@
+/**
+ * This code includes modifications from
+ * https://github.com/shapesecurity/shift-spec with the following license:
+ *
+ * ---
+ *
+ * Copyright 2014 Shape Security, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Proposals
+ * ============================================================================
+ */
+
+/**
+ * Async Iteration Proposal
+ * ------------------------
+ * Proposal: https://github.com/tc39/proposal-async-iteration
+ * Pull Request: shapesecurity/shift-spec#122
+ * Stage: 3
+ */
+
+interface WithIsAsync {
+  attribute boolean isAsync;
+};
+
+ForOfStatement implements WithIsAsync;
+
+/**
+ * RegExp DotAll Flag Proposal
+ * ---------------------------
+ * Proposal: https://github.com/tc39/proposal-regexp-dotall-flag
+ * Pull Request: shapesecurity/shift-spec#124
+ * Stage: 3
+ */
+
+interface WithSingleLine {
+  attribute boolean singleLine;
+};
+
+LiteralRegExpExpression implements WithSingleLine;
+
+/**
+ * Rest/Spread Properties Proposal
+ * -------------------------------
+ * Proposal: https://github.com/tc39/proposal-regexp-dotall-flag
+ * Pull Request: shapesecurity/shift-spec#121
+ * Stage: 3
+ */
+
+interface WithRestBindingIdentifier {
+  attribute BindingIdentifier? rest;
+}
+
+interface WithRestSimpleAssignmentTarget {
+  attribute SimpleAssignmentTarget? rest;
+}
+
+interface PropertiesWithSpreadElement {
+  attribute (ObjectProperty or SpreadElement)[] properties;
+}
+
+ObjectBinding implements WithRestBindingIdentifier;
+ObjectAssignmentTarget implements WithRestSimpleAssignmentTarget;
+ObjectExpression implements PropertiesWithSpreadElement;
+
+/**
+ * Dynamic Import Proposal
+ * -----------------------
+ * Proposal: https://github.com/tc39/proposal-dynamic-import
+ * Pull Request: shapesecurity/shift-spec#123
+ * Stage: 3
+ */
+
+interface ImportExpression : Expression {
+  attribute Expression argument;
+};
+
+/**
+ * BigInt Proposal
+ * ---------------
+ * Proposal: https://github.com/tc39/proposal-bigint
+ * Pull Request: shapesecurity/shift-spec#127
+ * Stage: 3
+ */
+
+interface LiteralBigIntExpression : Expression {
+  attribute string value;
+};
+
+/**
+ * `import.meta` Proposal
+ * ----------------------
+ * Proposal: https://github.com/tc39/proposal-import-meta
+ * Pull Request: shapesecurity/shift-spec#126
+ * Stage: 2
+ */
+
+interface ImportMetaExpression : Expression {}
+
+/**
+ * `function.sent` Proposal
+ * ------------------------
+ * Proposal: https://github.com/allenwb/ESideas/blob/master/Generator%20metaproperty.md
+ * Pull Request: shapesecurity/shift-spec#125
+ * Stage: 2
+ */
+
+interface FunctionSentExpression : Expression {}
+
+/**
+ * `export * as ns from "mod";` Proposal
+ * -------------------------------
+ * Proposal: https://github.com/tc39/proposal-export-default-from
+ * Pull Request: shapesecurity/shift-spec#129
+ * Stage: 1
+ */
+
+interface ExportNamespaceFrom : ExportDeclaration {
+  attribute ExportNamespaceFromSpecifier namespaceExport;
+  attribute string moduleSpecifier;
+};
+
+interface ExportNamespaceFromSpecifier : Node {
+  attribute IdentifierName exportedName;
+};
+
+/**
+ * `export default from` Proposal
+ * ------------------------------
+ * Proposal: https://github.com/tc39/proposal-export-default-from
+ * Pull Request: shapesecurity/shift-spec#128
+ * Stage: 1
+ */
+
+interface WithDefaultBinding {
+  attribute BindingIdentifier? defaultBinding;
+};
+
+ExportFrom implements WithDefaultBinding;
+ExportNamespaceFrom implements WithDefaultBinding;
+
+/**
+ * Do Expressions Proposal
+ * -------------------------------
+ * Proposal: https://github.com/tc39/proposal-do-expressions
+ * Pull Request: shapesecurity/shift-spec#131
+ * Stage: 1
+ */
+
+interface DoExpression : Expression {
+  attribute Block body;
+};
+
+/**
+ * Optional Chaining Proposal
+ * --------------------------
+ * Proposal: https://github.com/tc39/proposal-optional-chaining
+ * Pull Request: shapesecurity/shift-spec#130
+ * Stage: 1
+ */
+
+interface WithIsOptional {
+  attribute boolean isOptional;
+};
+
+CallExpression implements WithIsOptional;
+MemberExpression implements WithIsOptional;
+NewExpression implements WithIsOptional;
+
+/**
+ * Function Bind Operator Proposal
+ * -------------------------------
+ * Proposal: https://github.com/zenparsing/es-function-bind
+ * Pull Request: shapesecurity/shift-spec#132
+ * Stage: 0
+ */
+
+interface BindExpression : Expression {
+  attribute Expression object;
+  attribute Expression callee;
+};
+
+interface BindMemberExpression : Expression {
+  attribute MemberExpression memberExpression;
+};
+
+/**
+ * ============================================================================
+ * Extension: JSX
+ * ============================================================================
+ */
+
+interface JSXIdentifier : IdentifierExpression { }
+
+interface JSXMemberExpression : Expression {
+  attribute (JSXMemberExpression or JSXIdentifier) object;
+  attribute JSXIdentifier property;
+};
+
+interface JSXNamespacedName : Expression {
+  attribute JSXIdentifier namespace;
+  attribute JSXIdentifier name;
+};
+
+interface JSXEmptyExpression : Node { };
+
+interface JSXExpressionContainer : Node {
+  attribute (Expression or JSXEmptyExpression) expression;
+};
+
+interface JSXSpreadChild : Node {
+  attribute Expression expression;
+};
+
+interface JSXBoundaryElement : Node {
+  attribute (JSXIdentifier or JSXMemberExpression or JSXNamespacedName) name;
+};
+
+interface JSXOpeningElement : JSXBoundaryElement {
+  attribute (JSXAttribute or JSXSpreadAttribute)[] attributes;
+  attribute boolean selfClosing;
+};
+
+interface JSXClosingElement : JSXBoundaryElement { };
+
+interface JSXAttribute : Node {
+  attribute (JSXIdentifier or JSXNamespacedName) name;
+  attribute (Literal or JSXExpressionContainer or JSXElement)? value;
+}
+
+interface JSXSpreadAttribute : SpreadElement { };
+
+interface JSXText : Node {
+  attribute string value;
+  attribute string raw;
+};
+
+interface JSXElement : Expression {
+  attribute JSXOpeningElement openingElement;
+  attribute (JSXText or JSXExpressionContainer or JSXSpreadChild or JSXElement) children;
+  attribute JSXClosingElement? closingElement;
+};
+
+/**
+ * ============================================================================
+ * Extension: Typed JavaScript
+ * ============================================================================
+ */
+
+enum ImportKind { "value", "type", "typeof" };
+enum TypeVariance { "covariant", "contravariant" };
+enum TypeVisibility { "public", "private", "protected" };
+enum TypeAccess { "readonly", "writeonly" };
+
+/**
+ * ----------------------------------------------------------------------------
+ * Modifications:
+ * ----------------------------------------------------------------------------
+ */
+
+interface WithImportKind {
+  attribute ImportKind? importKind;
+}
+
+Import implements WithImportKind;
+ImportSpecifier implements WithImportKind;
+
+interface Export : ExportDeclaration {
+  attribute (FunctionDeclaration or ClassDeclaration or VariableDeclarationStatement or InterfaceDeclaration or EnumDeclaration or NamespaceDeclaration or TypeAliasDeclaration) declaration;
+};
+
+interface FormalParameters : Node {
+  attribute (Parameter or ParameterWithDefault)[] items;
+  attribute Parameter? rest;
+};
+
+interface Parameter : Node {
+  attribute Binding binding;
+  attribute Type paramType;
+};
+
+interface ParameterWithDefault : Node {
+  attribute BindingWithDefault binding;
+  attribute Type paramType;
+};
+
+interface ClassExtends : Node { };
+
+ClassExtends implements WithTypeArguments;
+
+interface ClassElement : Node {
+  attribute boolean isStatic;
+  attribute PropertyName name;
+  attribute TypeAccess? typeAccess;
+  attribute TypeVisibility? typeVisibility;
+  // Shift AST defines this as `method: MethodDefinition`
+  attribute (MethodDefinition or ClassField) value;
+};
+
+interface ClassField : Node {
+  attribute TypeVariance? variance;
+  attribute Type?: fieldType;
+  attribute Expression? init;
+};
+
+interface WithTypeParams {
+  attribute TypeParameterDeclaration? typeParams;
+}
+
+interface WithReturnType {
+  attribute Type? returnType;
+}
+
+Class implements WithTypeParams;
+
+MethodDefinition implements WithTypeParams;
+MethodDefinition implements WithReturnType;
+
+Function implements WithTypeParams;
+Function implements WithReturnType;
+
+ArrowExpression implements WithTypeParams;
+ArrowExpression implements WithReturnType;
+
+/**
+ * ----------------------------------------------------------------------------
+ * New:
+ * ----------------------------------------------------------------------------
+ */
+
+interface TypeParameterDeclaration : Node {
+  attribute TypeParameter[] items;
+};
+
+interface TypeParameter : Node {
+  attribute BindingIdentifier id;
+  attribute Variance? variance;
+};
+
+interface TypeArguments : Node {
+  attribute Type[] items;
+};
+
+interface WithTypeArguments {
+  attribute Expression expression;
+  attribute TypeArguments? typeArguments;
+};
+
+interface ClassExtends : Node { };
+ClassExtends implements WithTypeArguments;
+
+interface ClassImplements : Node { };
+ClassImplements implements WithTypeArguments;
+
+interface InterfaceDeclaration : Statement {
+  attribute BindingIdentifier name;
+  attribute TypeParameterDeclaration? typeParams;
+  attribute InterfaceExtends[] extendTypes;
+};
+
+interface InterfaceExtends : Node { };
+InterfaceExtends implements WithTypeArguments;
+
+interface TypeAliasDeclaration : Statement {
+  attribute BindingIdentifier name;
+  attribute TypeParameterDeclaration? typeParams;
+  attribute Type type;
+};
+
+interface EnumDeclaration : Statement {
+  // TODO
+};
+
+interface NamespaceDeclaration : Statement {
+  // TODO
+}
+
+interface Type : Node { };
+
+interface GenericType : Type { };
+GenericType implements WithTypeArguments;
+
+interface AnyType : Type { };
+interface MixedType : Type { };
+interface EmptyType : Type { };
+interface VoidType : Type { };
+interface NullType : Type { };
+interface BooleanType : Type { };
+interface StringType : Type { };
+interface NumberType : Type { };
+
+interface BooleanLiteralType : Type {
+  attribute boolean value;
+};
+
+interface StringLiteralType : Type {
+  attribute string value;
+};
+
+interface NumberLiteralType : Type {
+  attribute double value;
+};
+
+interface ThisType : Type { };
+interface ExistentialType : Type { };
+
+interface UnionType : Type {
+  attribute Type[] types;
+};
+
+interface IntersectionType : Type {
+  attribute Type[] types;
+};
+
+interface TupleType : Type {
+  attribute Type[] types;
+};
+
+interface NullableType : Type {
+  attribute Type argument;
+};
+
+interface TypeOfType : Type {
+  attribute Expression expression;
+};
+
+interface ObjectType : Type {
+  attribute ObjectTypeMember[] members;
+  attribute boolean? exact;
+};
+
+interface ObjectTypeMember : Node { };
+
+interface ObjectTypeProperty : ObjectTypeMember {
+  attribute IdentifierName name;
+  attribute Type value;
+  attribute boolean? optional;
+  attribute boolean? readonly;
+  attribute boolean? writeonly;
+  attribute Variance? variance;
+};
+
+interface ObjectTypeMethod : ObjectTypeMember {
+  attribute IdentifierName name;
+  // TODO
+};
+
+interface ObjectTypeIndexer : ObjectTypeMember {
+  attribute IdentifierName name;
+  attribute Type key;
+  attribute Type value;
+};
+
+interface FunctionType : Type {
+  attribute TypeParameterDeclaration? typeParams;
+  attribute MethodTypeParams params;
+  attribute Type? returnType;
+};
+
+interface MethodTypeParams : Type {
+  attribute MethodTypeParam[] items;
+  attribute MethodTypeParam? rest;
+};
+
+interface MethodTypeParam : Type {
+  attribute BindingIdentifier? id;
+  attribute Type paramType;
+  attribute boolean optional;
+};
